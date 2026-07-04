@@ -1,7 +1,7 @@
 # TheDilemma
 
 When the world is ending in 7 days the last question you probably have is, do we deserve it?
-How about we find out by using the most wellknown and iconic psycological dilemma, The prisoner dilemma.
+How about we find out by using the most wellknown and iconic psycological dilemma, the prisoner dilemma.
 
 ## Description
 
