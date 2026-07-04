@@ -5,7 +5,7 @@ How about we find out by using the most wellknown and iconic psycological dilemm
 
 ## Description
 
-This is a psychological research game made based of the prisoner dilemma.
+This is a psychological research game made based of the prisoner dilemma. We made this based of the theme "what would you make if the world's ending in 7 days" 
 
 ## Getting Started
 
@@ -57,7 +57,7 @@ This is a psychological research game made based of the prisoner dilemma.
 
 ### Firmware
 
-* The code is in C++ made for ESP-32
+* The code is in C++ made for Xiao ESP-32 C3
 * The library version might change over time, please recheck it again.
 * Sidenote: I'm not really sure about the code but I tried my best to polish it because my friend quit half way :(
 * Check out the [Firmware](firmware/Firmware.ino)
