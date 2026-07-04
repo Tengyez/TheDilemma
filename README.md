@@ -11,10 +11,7 @@ This is a psychological research game made based of the prisoner dilemma. We mad
 
 ### Usage
 
-* Place the 1.4m led strip over the piano in possition.
-* Charge your external LIPO-battery using Tp4056 usb-c charging module.
-* Plug the external lipo battery in and rest it on the holder (please be aware of the polarlity).
-* Set the setting mode and brightness via esp32-accesspoint captive portal.
+* Playing requires two player
 
 ### Assembling
 
