@@ -1,4 +1,5 @@
 #include "icons.h"
+#include <string.h>
 #include <Preferences.h>
 
 //ms between cycles
@@ -38,6 +39,12 @@ struct Animation PersonIcon {
   &(PERSONICON[0][0][0]),
   1,1,
   49,49,
+  true
+};
+struct Animation CircleIcon {
+  &(CIRCLEICON[0][0][0]),
+  1,1,
+  32,32,
   true
 };
 struct Animation HandshakeIcon {
@@ -167,6 +174,23 @@ void setup() {
 
   Serial.println("Exiting setup ...");
 }
+void drawCenteredText(
+  Adafruit_SSD1306 &display,
+  String text,
+  int16_t x,
+  int16_t y,
+  bool xIsCenter = true,
+  bool yIsCenter = true
+){
+  uint16_t w, h;
+  display.getTextBounds(text.c_str(), x, y, nullptr,
+                     nullptr, &w, &h);
+  display.setCursor(
+    xIsCenter ? x-(w/2) : x,
+    yIsCenter ? y-(h/2) : y
+  );
+  display.write(text.c_str());
+}
 void resultScreen(
   Adafruit_SSD1306 &display,
   int selfchoice,
@@ -181,11 +205,35 @@ void resultScreen(
   playAnimation(display, selectedAnimation, 
   SCREEN_WIDTH/2 - selectedAnimation.width/2,
   4);
+  drawCenteredText(
+    display,
+    String(
+        selfchoice > opponentchoice ? "YOU STOLE SUCCESSFULLY" :
+      selfchoice < opponentchoice ? "YOU GOT STOLEN FROM" :
+      selfchoice == -1 && opponentchoice == -1 ? "BOTH STOLE" :
+      selfchoice == 1 && opponentchoice == 1 ? "BOTH SPLIT" :
+      "ERROR"
+    ),
+    SCREEN_WIDTH/2,
+    SCREEN_HEIGHT-10,
+    true,
+    false
+  );
 }
 //choices : 0 = no choice yet, 1 = split, -1 = steal
 void loop() {
+  display1.setTextSize(1);
+  display2.setTextSize(1);
   if(player1_choice == 0 || player2_choice == 0){
     for(int i = 1; i <= 2; i++){
+      drawCenteredText(
+        i == 1 ? display1 : display2,
+        String("SPLIT OR STEAL"),
+        SCREEN_WIDTH/2,
+        SCREEN_HEIGHT-10,
+        true,
+        false
+      );
       if(i == 1 and player1_choice == 0 || i == 2 and player2_choice == 0)
       playAnimation(
         i == 1 ? display1 : display2,
@@ -193,9 +241,17 @@ void loop() {
         i == 1 ? 0 : (SCREEN_WIDTH-PersonIcon.width),
         (SCREEN_HEIGHT/2)-(PersonIcon.height/2)
       );
+      else 
+      playAnimation(
+        i == 1 ? display1 : display2,
+        CircleIcon,
+        i == 1 ? 0 : (SCREEN_WIDTH-CircleIcon.width),
+        (SCREEN_HEIGHT/2)-(CircleIcon.height/2)
+      );
     }
   } else {
-    
+    resultScreen(display1, player1_choice, player2_choice);
+    resultScreen(display2, player2_choice, player1_choice);
   }
 
   // ...
