@@ -15,48 +15,16 @@ This is a psychological research game made based of the prisoner dilemma. We mad
 
 ### Assembling
 
-* Print out the 3d parts (body,slider,topper,boostcover and please use the 3mf file I beg you)
-* Put the esp-32 into the main body
-* Stack the esp32 cover lid over the esp32 to lock it in place
-* stick all the pin header into it own slot
-* follow the wiring guide below
-* put the microphone into the 6 headerpin slot
-* stuff all the wiring jumper wires into the case
-* connect the led strip into the external headerpin
-* charge the lipo with the Tp4056 module (not include in the circuit and the case)
-* connect the lipo to the external header pin
-* cut your 2m led strip to your piano size
-* use a multimeter to check the boost converter and adjust first using a screw prior to adding it to the circuit
-* take the sliding lid and close it
-* mount the led and the component box on your piano
-* The only point require soldering are the INMP441 mic and the GND wires. 
+* Print out the 3d parts (body, please use the 3mf file I beg you)
+* 
 
 ### Wiring
-* INMP441 - ESP32
-* VDD  - 3.3V
-* GND  - GND
-* SCK  - GPIO32
-* WS   - GPIO25
-* SD   - GPIO34
-* L/R  - GND
-* WS2812B LED STRIP
-* DIN  - 300Ω → GPIO13
-* GND  - GND
-* MT3608 boost converter (use a multimeter to check the boost and adjust first prior to adding electricity)
-* +Vout - led strip 5v pin
-* -Vout - GND
-* Lipo battery (preferably 20 000mah)
-* Splice the red wire before connecting it to the boost converter and connect it to ESP-32 VIN pin
-* Red wire   - MT3608 +Vin pin
-* Black wire - GND
-* Splice all GND together and add solder and a electrical tape!!!
-* Refers to the schematic down below for more indepth guide.
+* 
 
 ### Firmware
 
 * The code is in C++ made for Xiao ESP-32 C3
 * The library version might change over time, please recheck it again.
-* Sidenote: I'm not really sure about the code but I tried my best to polish it because my friend quit half way :(
 * Check out the [Firmware](firmware/Firmware.ino)
 ## Materials
 
