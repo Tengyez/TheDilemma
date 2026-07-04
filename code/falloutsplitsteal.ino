@@ -1,6 +1,4 @@
 #include "icons.h"
-#include <string.h>
-#include <Preferences.h>
 
 //ms between cycles
 #define TICK_SPEED 50
@@ -10,19 +8,25 @@
 #include <Adafruit_GFX.h>
 #include <Adafruit_SSD1306.h>
 
-#define OLED_DC  5 
-#define OLED1_CS 6
-#define OLED2_CS 7
+#define SPLITBUTTON1_PIN 4
+#define SPLITBUTTON2_PIN 5
+#define STEALBUTTON1_PIN 7
+#define STEALBUTTON2_PIN 6
+
+#define OLED_DC  2  
+#define OLED1_CS 0
+#define OLED2_CS 1
 #define OLED_CLK 8
-#define OLED_MOSI 8
+#define OLED_MOSI 10
+#define OLED_RST -1
 
 #define SCREEN_WIDTH 128
 #define SCREEN_HEIGHT 64
 
 
 // 2nd to last parameter is pin of RST, set to -1 because not needed
-Adafruit_SSD1306 display1(SCREEN_WIDTH, SCREEN_HEIGHT, OLED_MOSI, OLED_CLK, OLED_DC, -1, OLED1_CS);
-Adafruit_SSD1306 display2(SCREEN_WIDTH, SCREEN_HEIGHT, OLED_MOSI, OLED_CLK, OLED_DC, -1, OLED2_CS);
+Adafruit_SSD1306 display1(SCREEN_WIDTH, SCREEN_HEIGHT, OLED_MOSI, OLED_CLK, OLED_DC, OLED_RST, OLED1_CS);
+Adafruit_SSD1306 display2(SCREEN_WIDTH, SCREEN_HEIGHT, OLED_MOSI, OLED_CLK, OLED_DC, OLED_RST, OLED2_CS);
 
 //animations
 struct Animation {
@@ -79,11 +83,6 @@ struct Animation ErrorIcon {
 };
 
 //--------
-
-#define SPLITBUTTON1_PIN 0
-#define SPLITBUTTON2_PIN 1
-#define STEALBUTTON1_PIN 2
-#define STEALBUTTON2_PIN 3
 
 void playAnimation(
   Adafruit_SSD1306 display,
@@ -143,53 +142,66 @@ void playAnimation(
 int player1_choice = 0;
 int player2_choice = 0;
 void setup() {
-  // put your setup code here, to run once:
+  Serial.begin(115200);
+
+  Serial.println("! Starting...");
   pinMode(SPLITBUTTON1_PIN, INPUT_PULLUP);
+  Serial.println("! Pass pin 1");
   pinMode(SPLITBUTTON2_PIN, INPUT_PULLUP);
+  Serial.println("! Pass pin 2");
   pinMode(STEALBUTTON1_PIN, INPUT_PULLUP);
+  Serial.println("! Pass pin 3");
   pinMode(STEALBUTTON2_PIN, INPUT_PULLUP);
+  Serial.println("! Pass pin 4");
   //button interrupt setup
   attachInterrupt(digitalPinToInterrupt(SPLITBUTTON1_PIN),
                   [](){ if(player1_choice == 0) player1_choice = 1; },
                   FALLING);
+  Serial.println("! Pass interrupt 1");
   attachInterrupt(digitalPinToInterrupt(SPLITBUTTON2_PIN),
                   [](){ if(player2_choice == 0) player2_choice = 1; },
                   FALLING);
+  Serial.println("! Pass interrupt 2");
   attachInterrupt(digitalPinToInterrupt(STEALBUTTON1_PIN),
                   [](){ if(player1_choice == 0) player1_choice = -1; },
                   FALLING);
+  Serial.println("! Pass interrupt 3");
   attachInterrupt(digitalPinToInterrupt(STEALBUTTON2_PIN),
                   [](){ if(player2_choice == 0) player2_choice = -1; },
                   FALLING);
-  //---
+  Serial.println("! Pass interrupt 4");
 
   if(!display1.begin(SSD1306_SWITCHCAPVCC)){
     Serial.println("!! DISPLAY 1 FAILURE");
     delay(500);
   }
+  Serial.println("! Pass display 1");
   if(!display2.begin(SSD1306_SWITCHCAPVCC)){
     Serial.println("!! DISPLAY 2 FAILURE");
     delay(500);
   }
+  Serial.println("! Pass display 2");
 
-  Serial.println("Exiting setup ...");
+
+  Serial.println("! Exiting setup ...");
+  delay(4000);
 }
 void drawCenteredText(
   Adafruit_SSD1306 &display,
-  String text,
+  const char *text,
   int16_t x,
   int16_t y,
   bool xIsCenter = true,
   bool yIsCenter = true
 ){
   uint16_t w, h;
-  display.getTextBounds(text.c_str(), x, y, nullptr,
+  display.getTextBounds(text, x, y, nullptr,
                      nullptr, &w, &h);
   display.setCursor(
     xIsCenter ? x-(w/2) : x,
     yIsCenter ? y-(h/2) : y
   );
-  display.write(text.c_str());
+  display.write(text);
 }
 void resultScreen(
   Adafruit_SSD1306 &display,
@@ -207,13 +219,12 @@ void resultScreen(
   4);
   drawCenteredText(
     display,
-    String(
         selfchoice > opponentchoice ? "YOU STOLE SUCCESSFULLY" :
       selfchoice < opponentchoice ? "YOU GOT STOLEN FROM" :
       selfchoice == -1 && opponentchoice == -1 ? "BOTH STOLE" :
       selfchoice == 1 && opponentchoice == 1 ? "BOTH SPLIT" :
       "ERROR"
-    ),
+    ,
     SCREEN_WIDTH/2,
     SCREEN_HEIGHT-10,
     true,
@@ -222,13 +233,12 @@ void resultScreen(
 }
 //choices : 0 = no choice yet, 1 = split, -1 = steal
 void loop() {
-  display1.setTextSize(1);
-  display2.setTextSize(1);
+  
   if(player1_choice == 0 || player2_choice == 0){
     for(int i = 1; i <= 2; i++){
       drawCenteredText(
         i == 1 ? display1 : display2,
-        String("SPLIT OR STEAL"),
+        "SPLIT OR STEAL",
         SCREEN_WIDTH/2,
         SCREEN_HEIGHT-10,
         true,
@@ -255,6 +265,8 @@ void loop() {
   }
 
   // ...
+  display1.display();
+  display2.display();
   delay(TICK_SPEED);
   display1.clearDisplay();
   display2.clearDisplay();
