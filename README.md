@@ -4,7 +4,7 @@ When the world is ending in 7 days the last question you probably have is, do we
 
 ## Description
 
-This is a prisoner dilemma made to 
+This is a psychological research game made based of the prisoner dilemma.
 
 ## Getting Started
 
