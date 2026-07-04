@@ -1,6 +1,6 @@
 # TheDilemma
 
-When the world is ending in 7 days, the last question you have is? do we deserve it?
+When the world is ending in 7 days the last question you probably have is, do we deserve it?
 
 ## Description
 
