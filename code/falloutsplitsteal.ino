@@ -11,22 +11,20 @@
 #define SPLITBUTTON1_PIN 4
 #define SPLITBUTTON2_PIN 5
 #define STEALBUTTON1_PIN 7
-#define STEALBUTTON2_PIN 6
+#define STEALBUTTON2_PIN 8
 
 #define OLED_DC  2  
-#define OLED1_CS 0
-#define OLED2_CS 1
-#define OLED_CLK 8
+#define OLED1_CS 20
+#define OLED2_CS 3
+#define OLED_CLK 8    
 #define OLED_MOSI 10
-#define OLED_RST -1
-
 #define SCREEN_WIDTH 128
 #define SCREEN_HEIGHT 64
 
 
 // 2nd to last parameter is pin of RST, set to -1 because not needed
-Adafruit_SSD1306 display1(SCREEN_WIDTH, SCREEN_HEIGHT, OLED_MOSI, OLED_CLK, OLED_DC, OLED_RST, OLED1_CS);
-Adafruit_SSD1306 display2(SCREEN_WIDTH, SCREEN_HEIGHT, OLED_MOSI, OLED_CLK, OLED_DC, OLED_RST, OLED2_CS);
+Adafruit_SSD1306 display1(SCREEN_WIDTH, SCREEN_HEIGHT, OLED_MOSI, OLED_CLK, OLED_DC, 21, OLED1_CS);
+Adafruit_SSD1306 display2(SCREEN_WIDTH, SCREEN_HEIGHT, OLED_MOSI, OLED_CLK, OLED_DC, 7, OLED2_CS);
 
 //animations
 struct Animation {
@@ -43,49 +41,55 @@ struct Animation PersonIcon {
   &(PERSONICON[0][0][0]),
   1,1,
   49,49,
-  true
+  true, 0
 };
 struct Animation CircleIcon {
   &(CIRCLEICON[0][0][0]),
   1,1,
   32,32,
-  true
+  true, 0
 };
 struct Animation HandshakeIcon {
   &(HANDSHAKEICON[0][0][0]),
   1,1,
   40,40,
-  true
+  true, 0
 };
 struct Animation DevilIcon {
   &(DEVILICON[0][0][0]),
   1,1,
   40,40,
-  true
+  true, 0
 };
 struct Animation SadIcon {
   &(SADICON[0][0][0]),
   1,1,
   40,40,
-  true
+  true, 0
 };
 struct Animation SkullIcon {
   &(SKULLICON[0][0][0]),
   1,1,
   40,40,
-  true
+  true, 0
 };
 struct Animation ErrorIcon {
   &(ERRORICON[0][0][0]),
   1,1,
   40,40,
-  true
+  true, 0
+};
+struct Animation CheckmarkIcon {
+  &(CHECKMARKICON[0][0][0]),
+  1,1,
+  49,49,
+  true, 0
 };
 
 //--------
 
 void playAnimation(
-  Adafruit_SSD1306 display,
+  Adafruit_SSD1306 &display,
   Animation &anim,
   int x,
   int y
@@ -93,7 +97,7 @@ void playAnimation(
   playAnimation(display, anim, x, y, true);
 }
 void playFlippedAnimation(
-  Adafruit_SSD1306 display,
+  Adafruit_SSD1306 &display,
   Animation &anim,
   int x,
   int y
@@ -114,7 +118,7 @@ void playFlippedAnimation(
   }
 }
 void playAnimation(
-  Adafruit_SSD1306 display,
+  Adafruit_SSD1306 &display,
   Animation &anim,
   int x,
   int y,
@@ -155,7 +159,10 @@ void setup() {
   Serial.println("! Pass pin 4");
   //button interrupt setup
   attachInterrupt(digitalPinToInterrupt(SPLITBUTTON1_PIN),
-                  [](){ if(player1_choice == 0) player1_choice = 1; },
+                  [](){ 
+                    Serial.println("AAAA");
+                    if(player1_choice == 0) player1_choice = 1; 
+                  },
                   FALLING);
   Serial.println("! Pass interrupt 1");
   attachInterrupt(digitalPinToInterrupt(SPLITBUTTON2_PIN),
@@ -173,18 +180,32 @@ void setup() {
 
   if(!display1.begin(SSD1306_SWITCHCAPVCC)){
     Serial.println("!! DISPLAY 1 FAILURE");
-    delay(500);
+    for(;;);
   }
+  display1.display();
+
   Serial.println("! Pass display 1");
   if(!display2.begin(SSD1306_SWITCHCAPVCC)){
     Serial.println("!! DISPLAY 2 FAILURE");
-    delay(500);
+    for(;;);
   }
+  display2.display();
+
   Serial.println("! Pass display 2");
-
-
   Serial.println("! Exiting setup ...");
-  delay(4000);
+
+  display2.setTextSize(1);      // Normal 1:1 pixel scale
+  display2.setTextColor(SSD1306_WHITE); // Draw white text
+  display2.setCursor(0, 0);     // Start at top-left corner
+  display2.cp437(true);         // Use full 256 char 'Code Page 437' font
+
+  
+  display1.setTextSize(1);      // Normal 1:1 pixel scale
+  display1.setTextColor(SSD1306_WHITE); // Draw white text
+  display1.setCursor(0, 0);     // Start at top-left corner
+  display1.cp437(true);         // Use full 256 char 'Code Page 437' font5
+
+  delay(500);
 }
 void drawCenteredText(
   Adafruit_SSD1306 &display,
@@ -194,14 +215,14 @@ void drawCenteredText(
   bool xIsCenter = true,
   bool yIsCenter = true
 ){
-  uint16_t w, h;
-  display.getTextBounds(text, x, y, nullptr,
-                     nullptr, &w, &h);
+  uint16_t w, h; 
+  int16_t x1, y1;
+  display.getTextBounds(text, 0, 0, &x1, &y1, &w, &h);
   display.setCursor(
     xIsCenter ? x-(w/2) : x,
     yIsCenter ? y-(h/2) : y
   );
-  display.write(text);
+  display.print(text);
 }
 void resultScreen(
   Adafruit_SSD1306 &display,
@@ -212,7 +233,7 @@ void resultScreen(
     selfchoice > opponentchoice ? DevilIcon :
     selfchoice < opponentchoice ? SadIcon :
     selfchoice == -1 && opponentchoice == -1 ? SkullIcon :
-    selfchoice == 1 && opponentchoice == 1 ? HandshakeIcon :
+    selfchoice == 1 && opponentchoice == 1 ? CheckmarkIcon :
     ErrorIcon;
   playAnimation(display, selectedAnimation, 
   SCREEN_WIDTH/2 - selectedAnimation.width/2,
@@ -233,30 +254,37 @@ void resultScreen(
 }
 //choices : 0 = no choice yet, 1 = split, -1 = steal
 void loop() {
-  
+  display1.clearDisplay();
+  display2.clearDisplay();
   if(player1_choice == 0 || player2_choice == 0){
     for(int i = 1; i <= 2; i++){
       drawCenteredText(
         i == 1 ? display1 : display2,
-        "SPLIT OR STEAL",
+        "1   2",
+        SCREEN_WIDTH/2,
+        SCREEN_HEIGHT/2-4,
+        true,
+        true
+      );
+      drawCenteredText(
+        i == 1 ? display1 : display2,
+        "SPLIT    OR    STEAL",
         SCREEN_WIDTH/2,
         SCREEN_HEIGHT-10,
         true,
         false
       );
-      if(i == 1 and player1_choice == 0 || i == 2 and player2_choice == 0)
       playAnimation(
         i == 1 ? display1 : display2,
-        PersonIcon,
-        i == 1 ? 0 : (SCREEN_WIDTH-PersonIcon.width),
-        (SCREEN_HEIGHT/2)-(PersonIcon.height/2)
+        player1_choice == 0 ? PersonIcon : CheckmarkIcon,
+        0,
+        2
       );
-      else 
       playAnimation(
         i == 1 ? display1 : display2,
-        CircleIcon,
-        i == 1 ? 0 : (SCREEN_WIDTH-CircleIcon.width),
-        (SCREEN_HEIGHT/2)-(CircleIcon.height/2)
+        player2_choice == 0 ? PersonIcon : CheckmarkIcon,
+        (SCREEN_WIDTH-(player2_choice == 0 ? PersonIcon.width : CheckmarkIcon.width)),
+        2
       );
     }
   } else {
@@ -267,7 +295,20 @@ void loop() {
   // ...
   display1.display();
   display2.display();
+
+  Serial.println(digitalRead(SPLITBUTTON1_PIN));
+
   delay(TICK_SPEED);
-  display1.clearDisplay();
-  display2.clearDisplay();
+  // if(digitalRead(SPLITBUTTON1_PIN) == LOW){
+  //   if(player1_choice == 0) player1_choice = 1; 
+  // }
+  // if(digitalRead(SPLITBUTTON2_PIN) == LOW){
+  //   if(player2_choice == 0) player2_choice = 1; 
+  // }
+  // if(digitalRead(STEALBUTTON1_PIN) == LOW){
+  //   if(player1_choice == 0) player1_choice = -1; 
+  // }
+  // if(digitalRead(STEALBUTTON2_PIN) == LOW){
+  //   if(player2_choice == 0) player2_choice = -1; 
+  // }
 }
