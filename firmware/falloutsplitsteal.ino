@@ -36,9 +36,15 @@ int steal_steals = -2;
 #define OLED_MOSI 10
 #define OLED_RST 20
 
+#define BUZZER_PIN 21
+
 #define SCREEN_WIDTH 128
 #define SCREEN_HEIGHT 64
 
+// buzzer params
+
+const long BUZZER_LENGTH = 200;
+long lastBuzzer = -BUZZER_LENGTH;
 
 // 2nd to last parameter is pin of RST, set to -1 because not needed
 Adafruit_SSD1306 display1(SCREEN_WIDTH, SCREEN_HEIGHT, OLED_MOSI, OLED_CLK, OLED_DC, OLED_RST, OLED1_CS);
@@ -213,6 +219,10 @@ int player1_choice = 0;
 int player2_choice = 0;
 bool reset = 0;
 
+void setBuzzer(){
+  lastBuzzer = millis();
+}
+
 void setup() {
   Serial.begin(115200);
 
@@ -230,6 +240,7 @@ void setup() {
                   [](){ 
                     if(player1_choice == 0){ 
                       player1_choice = 1; 
+                      setBuzzer();
                     }
                   },
                   FALLING);
@@ -238,6 +249,7 @@ void setup() {
                   [](){ 
                     if(player2_choice == 0) {
                       player2_choice = 1; 
+                      setBuzzer();
                     }
                   },
                   FALLING);
@@ -246,6 +258,7 @@ void setup() {
                   [](){ 
                     if(player1_choice == 0) {
                       player1_choice = -1; 
+                      setBuzzer();
                     }
                   },
                   FALLING);
@@ -254,10 +267,12 @@ void setup() {
                   [](){ 
                     if(player2_choice == 0) {
                       player2_choice = -1;
+                      setBuzzer();
                     }
                   },
                   FALLING);
   Serial.println("! Pass interrupt 4");
+  pinMode(BUZZER_PIN, OUTPUT);
 
   if(!display1.begin(SSD1306_SWITCHCAPVCC)){
     Serial.println("!! DISPLAY 1 FAILURE");
@@ -416,8 +431,16 @@ void confidenceScreen(
   }
 }
 
+void checkBuzzer(){
+  if(millis() - lastBuzzer < BUZZER_LENGTH ){
+    tone(BUZZER_PIN, 1000);
+  } else {
+    noTone(BUZZER_PIN);
+  }
+}
 //choices : 0 = no choice yet, 1 = split, -1 = steal
 void loop() {
+  checkBuzzer();
   if(reset==1){
     delay(4000);
     display1.clearDisplay();
@@ -497,7 +520,10 @@ void loop() {
     }
     display1.display();
     display2.display();
-    delay(500);
+    for(int i = 0; i < 500/TICK_SPEED; i++){
+      delay(TICK_SPEED);
+      checkBuzzer();
+    }
     if(player1_choice > player2_choice || player2_choice > player1_choice){
       split_steals++;
     } else if(player1_choice == -1 && player2_choice == -1){
@@ -521,6 +547,7 @@ void loop() {
       );
       display1.display();
       display2.display();
+      checkBuzzer();
       delay(TICK_SPEED);
     }
 
