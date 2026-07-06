@@ -14,7 +14,7 @@ After the event and everyone played it we will have a conclusion wether hackclub
 
 * Playing requires two player
 * Each player select blue button or red button (split or steal)
-* loser get shocked by consenstualy put the tip of the finger on the copper plate and press down on the piezo igniter.
+* loser get shocked by consens wualy put the tip of the finger on the copper plate and press down on the piezo igniter.
 
 ### Assembling
 
