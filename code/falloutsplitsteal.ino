@@ -8,6 +8,8 @@
 #define TOTAL_SPLIT_STEAL_KEY "TOTAL_SPLIT_STEAL_KEY"
 #define TOTAL_SPLIT_SPLIT_KEY "TOTAL_SPLIT_SPLIT_KEY"
 #define TOTAL_STEAL_STEAL_KEY "TOTAL_STEAL_STEAL_KEY"
+#define NVM_NAMESPACE "nvm"
+
 
 Preferences nvm;
 int split_splits = -2;
@@ -99,6 +101,12 @@ struct Animation CheckmarkIcon {
   &(CHECKMARKICON[0][0][0]),
   1,1,
   49,49,
+  true, 0
+};
+struct Animation VotedIcon {
+  &(VOTEDICON[0][0][0]),
+  1,1,
+  49,53,
   true, 0
 };
 struct Animation LoadingAnim1 {
@@ -220,7 +228,6 @@ void setup() {
   //button interrupt setup
   attachInterrupt(digitalPinToInterrupt(SPLITBUTTON1_PIN),
                   [](){ 
-                    Serial.println("AAAA");
                     if(player1_choice == 0){ 
                       player1_choice = 1; 
                     }
@@ -267,6 +274,7 @@ void setup() {
   Serial.println("! Pass display 2");
 
   // -----
+  nvm.begin(NVM_NAMESPACE, false);
   initMemory();
   Serial.println("! Pass non-volatile memory setup");
   // -----
@@ -370,8 +378,8 @@ void confidenceScreen(
     drawCenteredText(
       display,
       String(String(confidence*100, 2) + "%").c_str(),
-      SCREEN_WIDTH/2, SCREEN_HEIGHT/2,
-      true, true
+      SCREEN_WIDTH/2, 20,
+      true, false
     );
     display.setTextSize(1);
     drawCenteredText(
@@ -429,45 +437,61 @@ void loop() {
     for(int i = 1; i <= 2; i++){
       drawCenteredText(
         i == 1 ? display1 : display2,
-        "1   2",
+        "SPLIT",
         SCREEN_WIDTH/2,
-        SCREEN_HEIGHT/2-4,
+        18,
         true,
-        true
+        false
       );
       drawCenteredText(
         i == 1 ? display1 : display2,
-        "SPLIT    OR    STEAL",
+        "OR",
         SCREEN_WIDTH/2,
-        SCREEN_HEIGHT-10,
+        27,
+        true,
+        false
+      );
+      drawCenteredText(
+        i == 1 ? display1 : display2,
+        "STEAL",
+        SCREEN_WIDTH/2,
+        36,
         true,
         false
       );
       playAnimation(
         i == 1 ? display1 : display2,
-        player1_choice == 0 ? PersonIcon : CheckmarkIcon,
+        player1_choice == 0 ? PersonIcon : VotedIcon,
         0,
         5
       );
       playAnimation(
         i == 1 ? display1 : display2,
-        player2_choice == 0 ? PersonIcon : CheckmarkIcon,
-        (SCREEN_WIDTH-(player2_choice == 0 ? PersonIcon.width : CheckmarkIcon.width)),
+        player2_choice == 0 ? PersonIcon : VotedIcon,
+        (SCREEN_WIDTH-(player2_choice == 0 ? PersonIcon.width : VotedIcon.width)),
         5
+      );
+      drawCenteredText(
+        i == 1 ? display1 : display2,
+        "1                  2",
+        SCREEN_WIDTH/2,
+        3,
+        true,
+        false
       );
     }
   } else {
     for(int i = 1; i <= 2; i++){
       playAnimation(
         i == 1 ? display1 : display2,
-        CheckmarkIcon,
+        VotedIcon,
         0,
         5
       );
       playAnimation(
         i == 1 ? display1 : display2,
-        CheckmarkIcon,
-        (SCREEN_WIDTH-(player2_choice == 0 ? PersonIcon.width : CheckmarkIcon.width)),
+        VotedIcon,
+        (SCREEN_WIDTH-(player2_choice == 0 ? PersonIcon.width : VotedIcon.width)),
         5
       );
     }
