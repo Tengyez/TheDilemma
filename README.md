@@ -19,33 +19,29 @@ After the event and everyone played it we will have a conclusion wether hackclub
 ### Assembling
 
 * Print out the 3d parts (body, cover please use the 3mf file I beg you)
-* 
+* Connect the wire
+* use tape to hold oled in place
+* The buttons are snapfit put the red on the left for steal and blue on the right for split then mirror it for the other side.
 
 ### Wiring
-* refers to the schematic
+* splitbutton1 pin4
+* splitbutton2 pin5
+* stealbutton1 pin7
+* stealbutton2 pin6
+* oled_dc pin2
+* oled1_cs pin3
+* oled2_cs pin9
+* oled_clock pin8
+* oled_mosi pin10
+* oled_rst pin20
+* refers to the schematic for more information
+* solder and splice the wire together while avoid breadboard for better signal connection, if there's no duplicate in the wiring that means you just join the wire together.
 
 ### Firmware
 
 * The code is in C++ made for Xiao ESP-32 C3
 * The library version might change over time, please recheck it again.
 * Check out the [Firmware](firmware/Firmware.ino)
-## Materials
-
-This is the BOM of the entire project, just buy the normal one not the pcb version and just use jumper wire with minimal soldering required except for slicing GND together.
-```
-ESP-32 devkit v1           1 pcs. 8usd
-INMP441 mic                1 pcs. 1usd
-WS2812B led                2m 144/m 20usd
-LIPO-battery               1 (reccomend atleast 10 000mah) 7usd
-Tp4056 usb-c               1 (does not include in the build, only use the charge lipo externally) 1usd
-MT3608 boost converter     1 pcs. 1usd
-Female Jumper wires        30 pcs. 1usd
-Male Jumper wires          15 pcs. 50cent
-Pin headers                5 pcs. 25cent
-Electrical tape            1 roll -
-PLA 3d printing/time       ≈15g ≈45min -
-Total: 39.75 usd
-```
 
 ## Assembled Pictures
 
