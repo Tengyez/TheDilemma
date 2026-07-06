@@ -8,10 +8,10 @@
 #include <Adafruit_GFX.h>
 #include <Adafruit_SSD1306.h>
 
-#define SPLITBUTTON1_PIN 4
-#define SPLITBUTTON2_PIN 5
-#define STEALBUTTON1_PIN 7
-#define STEALBUTTON2_PIN 8
+#define SPLITBUTTON1_PIN 15
+#define SPLITBUTTON2_PIN 23
+#define STEALBUTTON1_PIN 22
+#define STEALBUTTON2_PIN 19
 
 #define OLED_DC  2  
 #define OLED1_CS 20
@@ -145,6 +145,8 @@ void playAnimation(
 
 int player1_choice = 0;
 int player2_choice = 0;
+bool reset = 0;
+
 void setup() {
   Serial.begin(115200);
 
@@ -256,6 +258,13 @@ void resultScreen(
 void loop() {
   display1.clearDisplay();
   display2.clearDisplay();
+  if(reset==1){
+    delay(1000);
+    player1_choice = 0;
+    player2_choice = 0;
+    delay(1000);
+    reset = 0;
+  }
   if(player1_choice == 0 || player2_choice == 0){
     for(int i = 1; i <= 2; i++){
       drawCenteredText(
@@ -266,30 +275,33 @@ void loop() {
         true,
         true
       );
-      drawCenteredText(
-        i == 1 ? display1 : display2,
-        "SPLIT    OR    STEAL",
-        SCREEN_WIDTH/2,
-        SCREEN_HEIGHT-10,
-        true,
-        false
-      );
+      // drawCenteredText(
+      //   i == 1 ? display1 : display2,
+      //   "SPLIT    OR    STEAL",
+      //   SCREEN_WIDTH/2,
+      //   SCREEN_HEIGHT-10,
+      //   true,
+      //   false
+      // );
       playAnimation(
         i == 1 ? display1 : display2,
         player1_choice == 0 ? PersonIcon : CheckmarkIcon,
         0,
-        2
+        5
       );
       playAnimation(
         i == 1 ? display1 : display2,
         player2_choice == 0 ? PersonIcon : CheckmarkIcon,
         (SCREEN_WIDTH-(player2_choice == 0 ? PersonIcon.width : CheckmarkIcon.width)),
-        2
+        5
       );
     }
   } else {
+    delay(500);
     resultScreen(display1, player1_choice, player2_choice);
     resultScreen(display2, player2_choice, player1_choice);
+    reset = 1;
+
   }
 
   // ...
