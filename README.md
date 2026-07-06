@@ -6,20 +6,23 @@ How about we find out by using the most wellknown and iconic psycological dilemm
 ## Description
 
 This is a psychological research game made based of the prisoner dilemma. We made this based of the theme "what would you make if the world's ending in 7 days" 
+After the event and everyone played it we will have a conclusion wether hackclub is good or evil using confidence interval.
 
 ## Getting Started
 
 ### Usage
 
 * Playing requires two player
+* Each player select blue button or red button (split or steal)
+* loser get shocked by consenstualy put the tip of the finger on the copper plate and press down on the piezo igniter.
 
 ### Assembling
 
-* Print out the 3d parts (body, please use the 3mf file I beg you)
+* Print out the 3d parts (body, cover please use the 3mf file I beg you)
 * 
 
 ### Wiring
-* 
+* refers to the schematic
 
 ### Firmware
 
