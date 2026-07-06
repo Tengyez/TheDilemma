@@ -45,18 +45,8 @@ After the event and everyone played it we will have a conclusion wether hackclub
 
 ## Assembled Pictures
 
-## Rendered Pictures
-
-
-
-## Captive Portal interface
-
-
-
 ## Wiring Diagram 
 <img width="1380" height="969" alt="image" src="https://github.com/user-attachments/assets/7be862da-b0e5-4416-b377-62f610ba3e29" />
-
-
 
 # Zine Poster
 
